@@ -28,12 +28,6 @@ namespace MP3PlayerCLI
                 Console.WriteLine("3. Playback Controls");
                 Console.WriteLine("4. Currently Playing Song");
                 Console.WriteLine("5. Search");
-                // NOTE
-                // Add selection for the shuffle and repeat functionalities, don't enable both to be TRUE, and define two variables in the Player class.
-                // implement a frequently check function to see if the playing song is completed or not. If that's completed, if
-                // repeat is enabled, start the song from scratch by using SelectAndPlaySong function after introducing the feature into this function for running already
-                // selected indexes/songs.
-                // If shuffle is selected, create one random selector function with randomly selected code index/name call the same SelectAndPlaySong function for reusability.
                 Console.WriteLine("6. Exit");
 
                 Console.Write("Select an option: ");
@@ -43,7 +37,7 @@ namespace MP3PlayerCLI
                 switch (choice)
                 {
                     case "1":
-                        musicLibrary.DisplayAlbums();
+                        musicLibrary.DisplayAlbumsAndSongs();
                         break;
                     case "2":
                         player.SelectAndPlaySong();
@@ -120,13 +114,32 @@ namespace MP3PlayerCLI
             }
         }
 
-        // Display all albums in the library
-        public void DisplayAlbums()
+        // Display all albums in the library and allow displaying songs
+        public void DisplayAlbumsAndSongs()
         {
             for (int i = 0; i < albums.Count; i++)
             {
                 var album = albums[i];
                 Console.WriteLine($"{i + 1}. {album.Name} by {album.Artist} ({album.Genre})");
+            }
+
+            Console.Write("Enter album number to view songs (or 0 to return): ");
+            if (int.TryParse(Console.ReadLine(), out int albumIndex) && albumIndex != 0)
+            {
+                albumIndex -= 1; // Convert to 0-based index
+                if (albumIndex >= 0 && albumIndex < albums.Count)
+                {
+                    var album = albums[albumIndex];
+                    Console.WriteLine($"\nSongs in {album.Name}:");
+                    for (int i = 0; i < album.Songs.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {album.Songs[i].Name} ({album.Songs[i].Duration})");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid album selection.");
+                }
             }
         }
 
@@ -203,8 +216,8 @@ namespace MP3PlayerCLI
         public void SelectAndPlaySong()
         {
             Console.WriteLine("\nSelect an album:");
-            musicLibrary.DisplayAlbums();
-            Console.Write("Enter album number: ");
+            musicLibrary.DisplayAlbumsAndSongs();
+            Console.Write("Enter album number to play a song: ");
             if (int.TryParse(Console.ReadLine(), out int albumIndex))
             {
                 albumIndex -= 1; // Convert to 0-based index
