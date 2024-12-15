@@ -115,13 +115,15 @@ namespace MP3PlayerCLI
         }
 
         // Display all albums in the library and allow displaying songs
-        public void DisplayAlbumsAndSongs()
+        public void DisplayAlbumsAndSongs(bool showSongs = true)
         {
             for (int i = 0; i < albums.Count; i++)
             {
                 var album = albums[i];
                 Console.WriteLine($"{i + 1}. {album.Name} by {album.Artist} ({album.Genre})");
             }
+
+            if (!showSongs) return;
 
             Console.Write("Enter album number to view songs (or 0 to return): ");
             if (int.TryParse(Console.ReadLine(), out int albumIndex) && albumIndex != 0)
@@ -216,12 +218,12 @@ namespace MP3PlayerCLI
         public void SelectAndPlaySong()
         {
             Console.WriteLine("\nSelect an album:");
-            musicLibrary.DisplayAlbumsAndSongs();
+            musicLibrary.DisplayAlbumsAndSongs(false);
             Console.Write("Enter album number to play a song: ");
             if (int.TryParse(Console.ReadLine(), out int albumIndex))
             {
                 albumIndex -= 1; // Convert to 0-based index
-                try
+                if (albumIndex >= 0 && albumIndex < musicLibrary.GetAlbums().Count)
                 {
                     var album = musicLibrary.GetAlbumByIndex(albumIndex);
                     currentAlbum = album;
@@ -249,9 +251,9 @@ namespace MP3PlayerCLI
                         }
                     }
                 }
-                catch (ArgumentException e)
+                else
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Invalid album selection.");
                 }
             }
             else
